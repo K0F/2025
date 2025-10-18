@@ -2,9 +2,17 @@ import java.awt.Component;
 import java.awt.Window;
 import java.awt.Frame;
 import javax.swing.SwingUtilities;
+import processing.pdf.*;
+
 
 Frame frame;
 boolean initialized = false;
+boolean saving = false;
+
+void savePDF(){
+	saving = true;
+	beginRecord(PDF, "filename.pdf");
+}
 
 ArrayList strokes;
 
@@ -52,14 +60,20 @@ void draw(){
 
 
   if (!initialized) return;
-  
+
+  	if(!saving)
 	background(0);
 
-	stroke(255,127);
+	stroke(saving?0:255,127);
 
 	for(int i = 0 ; i < strokes.size();i++){
 		Stroke tmp = (Stroke)strokes.get(i);
 		tmp.draw();
+	}
+
+	if(saving){
+	endRecord();
+	saving = false;
 	}
 	
 }
@@ -84,6 +98,13 @@ void keyPressed(){
 	if(key==BACKSPACE)
 	if(strokes.size()>0)
 		strokes.remove(strokes.size()-1);
+
+		if(key==' '){
+					println("saving");
+					saveFrame("#####.png");
+					savePDF();
+					strokes = new ArrayList();	
+		};
 }
 
 class Stroke{
